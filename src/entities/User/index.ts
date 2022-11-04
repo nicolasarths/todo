@@ -1,6 +1,6 @@
 import Identifier, { IIdentifier } from "../Identifier";
 import { checkId, generateId } from "src/utils";
-
+import TodoApp from "src/entities/TodoApp";
 export class UserID extends Identifier implements IIdentifier {
   constructor() {
     super();
@@ -21,6 +21,7 @@ export default class User {
   private name: string;
   private email: string;
   private password: string;
+  private apps: TodoApp[] = [];
 
   constructor(email: string, password: string) {
     this.id = this.identifier.getId();
@@ -59,5 +60,14 @@ export default class User {
   public auth(password: string): boolean {
     if (this.password === password) return true;
     else return false;
+  }
+
+  public createApp(): void {
+    const app = new TodoApp(this.getId());
+    this.apps.push(app);
+  }
+
+  public getApps(): TodoApp {
+    return this.apps;
   }
 }

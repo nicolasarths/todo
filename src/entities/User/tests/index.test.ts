@@ -1,4 +1,5 @@
 import User, { UserID } from "..";
+import TodoApp from "src/entities/TodoApp";
 
 describe("User instantiation", () => {
   const originalPassword = "originalPass";
@@ -33,5 +34,43 @@ describe("User instantiation", () => {
     const newPass = "newPassword";
     user.setPassword(newPass);
     expect(user.auth(newPass)).toBeTruthy();
+  });
+
+  it("can create and own apps", () => {
+    user.createApp();
+
+    expect(user.getApps()).toBeTruthy();
+    expect(user.getApps().length).toBe(1);
+
+    user.createApp();
+
+    expect(user.getApps().length).toBe(2);
+
+    expect(user.getApps()[0]).toBeInstanceOf(TodoApp);
+
+    user.getApps().forEach((app: TodoApp) => {
+      expect(app.getOwnerId()).toEqual(user.getId());
+    });
+  });
+
+  it("can create lists into certain apps", () => {
+    const retrieveLastCreatedApp = () => {
+      const retrievedApps = user.getApps();
+      return retrievedApps[retrievedApps.length - 1];
+    };
+
+    user.createApp();
+    const app = retrieveLastCreatedApp();
+    app.addList();
+
+    expect(app.getLists()).toBeTruthy();
+    expect(app.getLists().length).toBe(1);
+
+    user.createApp();
+    const anotherApp = retrieveLastCreatedApp();
+    [1, 2].forEach(() => anotherApp.addList());
+
+    expect(anotherApp.getLists().length).toBe(2);
+    expect(app.getLists().length).toBe(1);
   });
 });

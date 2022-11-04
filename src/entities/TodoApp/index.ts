@@ -2,6 +2,12 @@ import TodoList from "src/entities/TodoList";
 
 export default class TodoApp {
   private lists: TodoList[] = [];
+  private ownerId: string;
+
+  constructor(ownerId: string) {
+    if (!ownerId) throw Error("Missing owner id on app instantiation");
+    this.setOwnerId(ownerId);
+  }
 
   public addList(list: TodoList): void {
     this.lists.push(list);
@@ -27,5 +33,13 @@ export default class TodoApp {
         return previousList;
       });
     else throw Error("Could not find list by id, nothing has been updated");
+  }
+
+  public setOwnerId(ownerId: string): void {
+    this.ownerId = ownerId;
+  }
+
+  public getOwnerId(): string {
+    return this.ownerId;
   }
 }

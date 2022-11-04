@@ -1,8 +1,10 @@
 import TodoApp from "..";
 import TodoList from "src/entities/TodoList";
+import User from "src/entities/User";
 
 describe("TodoApp", () => {
-  const todoApp = new TodoApp();
+  const user = new User("some@mail.com", "123456");
+  const todoApp = new TodoApp(user.getId());
   const lists = [1, 2, 3, 4, 5, 6, 7].map((i) => new TodoList(`List${i}`));
   lists.forEach((list) => todoApp.addList(list));
 
