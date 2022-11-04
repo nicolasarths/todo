@@ -9,6 +9,7 @@ export default class TodoList {
   private active: boolean = true;
 
   constructor(name: string) {
+    if (!name) throw Error("A list should have a name");
     this.name = name;
     this.id = this.identifier.getId();
   }
