@@ -1,6 +1,53 @@
 {
   "compilerOptions": {
+    "rootDir": "./",
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "noImplicitAny": true,
+    "target": "ES5",
+    "module": "ES2015",
+    "paths": {
+      "src": [
+        "./src/",
+        "./src/*",
+        "./src",
+        "src/",
+        "src/*",
+        "/src",
+        "/src/",
+        "/src/*"
+      ],
+      "src/": [
+        "./src/",
+        "./src/*",
+        "./src",
+        "src/",
+        "src/*",
+        "/src",
+        "/src/",
+        "/src/*"
+      ],
+      "src/*": [
+        "./src/",
+        "./src/*",
+        "./src",
+        "src/",
+        "src/*",
+        "/src",
+        "/src/",
+        "/src/*"
+      ]
+    },
+    "rootDirs": [".", "./"],
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": true,
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "strictPropertyInitialization": false
-  }
+    "skipLibCheck": true
+  },
+  "include": ["package.json", "package-lock.json", "src"],
+  "exclude": ["node_modules"]
 }
