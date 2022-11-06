@@ -41,7 +41,7 @@ describe("Storage", () => {
   });
 
   it("can delete user", () => {
-    storage.deleteUserById(users[0].id);
+    storage.deleteUserById(users[0].getId());
     expect(storage.getUserByEmail(users[0].getEmail())).toBeFalsy();
     expect(storage.getUserById(users[0].getId())).toBeFalsy();
   });

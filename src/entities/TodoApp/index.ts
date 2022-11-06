@@ -1,10 +1,13 @@
 import TodoList from "src/entities/TodoList";
+import TodoListID from "../TodoList/TodoListID";
+import { UserID } from "../User";
+import exampleLists from "./exampleLists";
 
 export default class TodoApp {
-  private lists: TodoList[] = [];
-  private ownerId: string;
+  private lists: TodoList[] = exampleLists;
+  private ownerId: UserID | undefined;
 
-  constructor(ownerId: string) {
+  constructor(ownerId: UserID) {
     if (!ownerId) throw Error("Missing owner id on app instantiation");
     this.setOwnerId(ownerId);
   }
@@ -17,12 +20,18 @@ export default class TodoApp {
     return this.lists;
   }
 
-  public getListById(id: string): TodoList {
-    return this.lists.find((list) => list.getId() === id);
+  public getListById(id: TodoListID): TodoList {
+    const list = this.lists.find((list) => list.getId() === id);
+    if (list) return list;
+    else throw Error("List not found");
   }
 
-  public removeList(id: string): void {
+  public removeList(id: TodoListID): void {
     this.lists = this.lists.filter((list) => list.getId() != id);
+  }
+
+  public removeAllLists(): void {
+    this.lists = [];
   }
 
   public updateList(list: TodoList): void {
@@ -35,11 +44,13 @@ export default class TodoApp {
     else throw Error("Could not find list by id, nothing has been updated");
   }
 
-  public setOwnerId(ownerId: string): void {
+  public setOwnerId(ownerId: UserID): void {
     this.ownerId = ownerId;
   }
 
-  public getOwnerId(): string {
-    return this.ownerId;
+  public getOwnerId(): UserID {
+    const id = this.ownerId;
+    if (id) return id;
+    else throw Error("No ID found");
   }
 }

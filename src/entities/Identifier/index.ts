@@ -1,16 +1,5 @@
-export default class Identifier {
-  private id: string;
-
-  public getId(): string {
-    return this.id;
-  }
-
-  public setId(id: string): void {
-    this.id = id;
-  }
-}
-
-export interface IIdentifier {
-  isId(id: string): boolean;
-  generateId(): string;
+export default abstract class Identifier {
+  abstract _id: string;
+  abstract get id(): string;
+  abstract set id(id: any);
 }

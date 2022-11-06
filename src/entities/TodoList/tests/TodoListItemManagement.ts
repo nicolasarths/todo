@@ -1,5 +1,7 @@
 import TodoList from "..";
 import TodoItem from "src/entities/TodoItem";
+import TodoItemID from "src/entities/TodoItem/TodoItemID";
+import TodoListID from "../TodoListID";
 
 export default () => {
   let aTodoList: TodoList;
@@ -7,11 +9,18 @@ export default () => {
   beforeEach(() => {
     aTodoList = new TodoList("My testing list");
   });
-  const newItem = () => new TodoItem("A todo item");
+  const newItem = () => new TodoItem("A todo item", new TodoListID());
+  it("can add item just by providing a name", () => {
+    aTodoList.addItem("My item");
+    const retrievedItem = aTodoList.getItemByContent("My item");
+    expect(retrievedItem).toBeTruthy();
+    expect(retrievedItem.getId()).toBeTruthy();
+  });
+
   it("can add item", () => {
     const item = newItem();
     const id = item.getId();
-    aTodoList.addItem(item);
+    aTodoList.addItemInstance(item);
 
     const retrievedItem = aTodoList.getItems()[0];
     const retrievedItemId = retrievedItem.getId();
@@ -25,9 +34,9 @@ export default () => {
     const randomItems1 = [newItem(), newItem(), newItem()];
     const randomItems2 = [newItem(), newItem(), newItem()];
 
-    randomItems1.forEach((item) => aTodoList.addItem(item));
-    aTodoList.addItem(specificItem);
-    randomItems2.forEach((item) => aTodoList.addItem(item));
+    randomItems1.forEach((item) => aTodoList.addItemInstance(item));
+    aTodoList.addItemInstance(specificItem);
+    randomItems2.forEach((item) => aTodoList.addItemInstance(item));
 
     const queryResult = aTodoList.getItemById(specificId);
     expect(queryResult).toBeTruthy();
@@ -38,7 +47,8 @@ export default () => {
 
   it("can query for content (in name or description)", () => {
     const content = "a different content";
-    const itemWithSpecificContentInName = new TodoItem(content);
+    const mockTodoListId = new TodoListID();
+    const itemWithSpecificContentInName = new TodoItem(content, mockTodoListId);
     const itemWithSpecificContentInNameId =
       itemWithSpecificContentInName.getId();
 
@@ -47,10 +57,10 @@ export default () => {
     const itemWithSpecificContentInDescId =
       itemWithSpecificContentInDesc.getId();
 
-    aTodoList.addItem(itemWithSpecificContentInName);
-    aTodoList.addItem(itemWithSpecificContentInDesc);
+    aTodoList.addItemInstance(itemWithSpecificContentInName);
+    aTodoList.addItemInstance(itemWithSpecificContentInDesc);
 
-    const queryResults: TodoItem[] = aTodoList.getItemByContent(content);
+    const queryResults: TodoItem[] = aTodoList.getItemsByContent(content);
 
     expect(Array.isArray(queryResults)).toBeTruthy();
     expect(queryResults.length).toBe(2);
@@ -59,10 +69,10 @@ export default () => {
   });
 
   it("can get all previously added items", () => {
-    const ids: string[] = [];
+    const ids: TodoItemID[] = [];
     for (let i = 0; i < 20; i++) {
       const item = newItem();
-      aTodoList.addItem(item);
+      aTodoList.addItemInstance(item);
       ids.push(item.getId());
     }
     const retrievedItems = aTodoList.getItems();
@@ -73,10 +83,10 @@ export default () => {
     });
   });
   it("can remove item by id", () => {
-    const ids: string[] = [];
+    const ids: TodoItemID[] = [];
     for (let i = 0; i < 10; i++) {
       const item = newItem();
-      aTodoList.addItem(item);
+      aTodoList.addItemInstance(item);
       ids.push(item.getId());
     }
     expect(aTodoList.getItems().length).toEqual(10);
@@ -88,11 +98,22 @@ export default () => {
 
     expect(() => aTodoList.removeItemById(ids[9])).toThrow("");
   });
+
+  it("can remove all items from a list", () => {
+    for (let i = 0; i < 10; i++) {
+      const item = newItem();
+      aTodoList.addItemInstance(item);
+    }
+    expect(aTodoList.getItems().length).toEqual(10);
+    aTodoList.removeAllItems();
+    expect(aTodoList.getItems().length).toEqual(0);
+  });
+
   it("can update item by id", () => {
-    const ids: string[] = [];
+    const ids: TodoItemID[] = [];
     for (let i = 0; i < 5; i++) {
       const item = newItem();
-      aTodoList.addItem(item);
+      aTodoList.addItemInstance(item);
       ids.push(item.getId());
     }
 
@@ -104,9 +125,11 @@ export default () => {
     expect(item.getName()).toEqual(name);
     expect(item.getDescription()).toEqual(desc);
 
-    expect(() => aTodoList.updateItemName("invalidId", "any name")).toThrow();
     expect(() =>
-      aTodoList.updateItemDescription("invalidId", "any description")
+      aTodoList.updateItemName(new TodoItemID(), "any name")
+    ).toThrow();
+    expect(() =>
+      aTodoList.updateItemDescription(new TodoItemID(), "any description")
     ).toThrow();
   });
 };

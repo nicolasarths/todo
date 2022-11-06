@@ -1,17 +1,26 @@
 import TodoApp from "..";
 import TodoList from "src/entities/TodoList";
 import User from "src/entities/User";
+import exampleLists from "../exampleLists";
 
 describe("TodoApp", () => {
   const user = new User("some@mail.com", "123456");
   const todoApp = new TodoApp(user.getId());
   const lists = [1, 2, 3, 4, 5, 6, 7].map((i) => new TodoList(`List${i}`));
-  lists.forEach((list) => todoApp.addList(list));
-
   const aList = lists[3];
   const anId = aList.getId();
 
+  it("is instantiated with example lists", () => {
+    expect(todoApp.getLists().length).toBe(exampleLists.length);
+  });
+
+  it("can remove all lists at once", () => {
+    todoApp.removeAllLists();
+    expect(todoApp.getLists().length).toEqual(0);
+  });
+
   it("can have more than one Todo List", () => {
+    lists.forEach((list) => todoApp.addList(list));
     const retrievedLists = todoApp.getLists();
     expect(retrievedLists).toBeTruthy();
     expect(retrievedLists.length).toBe(7);
@@ -23,7 +32,7 @@ describe("TodoApp", () => {
   });
   it("can remove list", () => {
     todoApp.removeList(anId);
-    expect(todoApp.getListById(anId)).toBeFalsy();
+    expect(() => todoApp.getListById(anId)).toThrow();
   });
   it("can add a list back", () => {
     todoApp.addList(aList);

@@ -1,4 +1,4 @@
-import User from "src/entities/User";
+import User, { UserID } from "src/entities/User";
 
 export default class Storage {
   private users: User[] = [];
@@ -8,6 +8,7 @@ export default class Storage {
       throw Error("Email already exists");
     if (this.getUserById(user.getId()))
       throw Error("Id conflict: a user with the same id already exists");
+
     this.users.push(user);
   }
 
@@ -15,15 +16,15 @@ export default class Storage {
     return this.users;
   }
 
-  public getUserByEmail(email: string): User {
+  public getUserByEmail(email: string): User | undefined {
     return this.users.find((user) => user.getEmail() == email);
   }
 
-  public getUserById(id: string): User {
+  public getUserById(id: UserID): User | undefined {
     return this.users.find((user) => user.getId() == id);
   }
 
-  public deleteUserById(id: string): void {
+  public deleteUserById(id: UserID): void {
     this.users = this.users.filter((user) => user.getId() != id);
   }
 }

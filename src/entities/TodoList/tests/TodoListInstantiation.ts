@@ -5,8 +5,7 @@ export default () => {
   const aTodoList = new TodoList("My testing list");
   it("has to have an id", () => {
     const id = aTodoList.getId();
-    const identifier = new TodoListID();
-    expect(identifier.isId(id)).toBeTruthy();
+    expect(id).toBeInstanceOf(TodoListID);
   });
   it("has a title", () => {
     const title = aTodoList.getName();

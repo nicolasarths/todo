@@ -1,14 +1,14 @@
 import User, { UserID } from "..";
 import TodoApp from "src/entities/TodoApp";
+import exampleLists from "src/entities/TodoApp/exampleLists";
 
 describe("User instantiation", () => {
   const originalPassword = "originalPass";
   const user = new User("valid@email.com", originalPassword);
   it("has an id", () => {
     const id = user.getId();
-    const identifier = new UserID();
     expect(id).toBeTruthy();
-    expect(identifier.isId(id)).toBeTruthy();
+    expect(id).toBeInstanceOf(UserID);
   });
 
   it("a name can be set, and then altered", () => {
@@ -27,6 +27,15 @@ describe("User instantiation", () => {
     expect(user.getEmail()).toEqual(newEmail);
   });
 
+  it("has unverified email by default", () => {
+    expect(user.getVerifiedEmail()).toBeFalsy();
+  });
+
+  it("can verify set email as verified", () => {
+    user.setVerifiedEmail(true);
+    expect(user.getVerifiedEmail()).toBeTruthy();
+  });
+
   it("has a password, which can be altered", () => {
     expect(user.hasPassword()).toBeTruthy();
     expect(user.auth(originalPassword)).toBeTruthy();
@@ -36,41 +45,20 @@ describe("User instantiation", () => {
     expect(user.auth(newPass)).toBeTruthy();
   });
 
-  it("can create and own apps", () => {
-    user.createApp();
-
-    expect(user.getApps()).toBeTruthy();
-    expect(user.getApps().length).toBe(1);
-
-    user.createApp();
-
-    expect(user.getApps().length).toBe(2);
-
-    expect(user.getApps()[0]).toBeInstanceOf(TodoApp);
-
-    user.getApps().forEach((app: TodoApp) => {
-      expect(app.getOwnerId()).toEqual(user.getId());
-    });
+  it("is born with one already", () => {
+    expect(user.getApp()).toBeTruthy();
+    expect(user.getApp()).toBeInstanceOf(TodoApp);
+    expect(user.getApp().getOwnerId()).toEqual(user.getId());
   });
-
-  it("can create lists into certain apps", () => {
-    const retrieveLastCreatedApp = () => {
-      const retrievedApps = user.getApps();
-      return retrievedApps[retrievedApps.length - 1];
-    };
-
-    user.createApp();
-    const app = retrieveLastCreatedApp();
-    app.addList();
-
-    expect(app.getLists()).toBeTruthy();
-    expect(app.getLists().length).toBe(1);
-
-    user.createApp();
-    const anotherApp = retrieveLastCreatedApp();
-    [1, 2].forEach(() => anotherApp.addList());
-
-    expect(anotherApp.getLists().length).toBe(2);
-    expect(app.getLists().length).toBe(1);
+  it("starts off with example lists", () => {
+    expect(user.getLists().length).toBe(exampleLists.length);
+  });
+  it("can remove all lists", () => {
+    user.removeAllLists();
+    expect(user.getLists().length).toBe(0);
+  });
+  it("can create lists", () => {
+    user.createList("a todo list");
+    expect(user.getLists().length).toBe(1);
   });
 });

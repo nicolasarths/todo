@@ -1,13 +1,10 @@
 import Identifier from "../Identifier";
-import { checkId, generateId } from "src/utils";
-export default class TodoListID extends Identifier {
-  constructor() {
-    super();
-    super.setId(this.generateId());
-  }
+import { generateId } from "src/utils";
+export default class TodoListID implements Identifier {
+  _id: string = this.generateId();
 
-  public isId(id: string) {
-    return checkId(id, "TodoList");
+  get id(): string {
+    return this._id;
   }
 
   public generateId(): string {

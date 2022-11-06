@@ -1,4 +1,4 @@
-import { TodoListID } from "src/entities/TodoList";
+import TodoListID from "../TodoList/TodoListID";
 import TodoItemID from "./TodoItemID";
 
 const Errors = {
@@ -10,15 +10,13 @@ const throwError = (err: string) => {
 };
 
 class TodoItem {
-  private id: string;
-  private identifier: TodoItemID = new TodoItemID();
+  private id: TodoItemID = new TodoItemID();
   private name: Required<string> = "";
   private description: string = "";
   private completed: boolean;
   private todoListId!: TodoListID;
 
   constructor(name: Required<string>, todoListID: TodoListID) {
-    this.id = this.identifier.getId();
     this.setName(name);
     this.completed = false;
     this.setTodoListId(todoListID);

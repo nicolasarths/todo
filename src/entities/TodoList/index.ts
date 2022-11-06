@@ -1,9 +1,9 @@
 import TodoItem from "src/entities/TodoItem";
+import TodoItemID from "../TodoItem/TodoItemID";
 import TodoListID from "./TodoListID";
 
 export default class TodoList {
-  private id: string;
-  private identifier: TodoListID = new TodoListID();
+  private id: TodoListID = new TodoListID();
   private name: string;
   private items: TodoItem[] = [];
   private active: boolean = true;
@@ -11,10 +11,9 @@ export default class TodoList {
   constructor(name: string) {
     if (!name) throw Error("A list should have a name");
     this.name = name;
-    this.id = this.identifier.getId();
   }
 
-  public getId(): string {
+  public getId(): TodoListID {
     return this.id;
   }
   public getName(): string {
@@ -33,28 +32,50 @@ export default class TodoList {
     this.active = bool;
   }
 
-  public addItem(item: TodoItem): void {
+  public addItem(name: string): void {
+    const item = new TodoItem(name, this.id);
     this.items.push(item);
   }
 
-  public getItemById(id: string): TodoItem {
-    return this.items.find((item) => item.id === id);
+  public addItemInstance(item: TodoItem): void {
+    this.items.push(item);
   }
 
-  public getItemByContent(content: string): TodoItem[] {
+  public getItemById(id: TodoItemID): TodoItem {
+    const item = this.items.find((item) => item.getId() === id);
+    if (!item) throw Error("Item not found");
+    else return item;
+  }
+
+  public getItemByContent(content: string): TodoItem {
+    const items = this.items.find(
+      (item) =>
+        item.getName().includes(content) ||
+        item.getDescription().includes(content)
+    );
+
+    if (items) return items;
+    else throw Error("No item has been found");
+  }
+
+  public getItemsByContent(content: string): TodoItem[] {
     return this.items.filter(
       (item) =>
         item.getName().includes(content) ||
         item.getDescription().includes(content)
     );
   }
-  public removeItemById(id: string): void {
+  public removeItemById(id: TodoItemID): void {
     this.checkIfItemExists(id);
 
-    this.items = this.items.filter((item) => item.id != id);
+    this.items = this.items.filter((item) => item.getId() != id);
   }
 
-  public updateItemName(id: string, name: string): void {
+  public removeAllItems(): void {
+    this.items = [];
+  }
+
+  public updateItemName(id: TodoItemID, name: string): void {
     this.checkIfItemExists(id);
 
     this.items = this.items.map((item) => {
@@ -63,7 +84,7 @@ export default class TodoList {
     });
   }
 
-  public updateItemDescription(id: string, description: string): void {
+  public updateItemDescription(id: TodoItemID, description: string): void {
     this.checkIfItemExists(id);
     this.items = this.items.map((item) => {
       if (item.getId() === id) item.setDescription(description);
@@ -71,7 +92,7 @@ export default class TodoList {
     });
   }
 
-  private checkIfItemExists(id: string): void {
+  private checkIfItemExists(id: TodoItemID): void {
     if (this.getItemById(id)) return;
     else throw Error("provided id does not match any items");
   }
